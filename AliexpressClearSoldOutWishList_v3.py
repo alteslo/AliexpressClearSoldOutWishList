@@ -9,6 +9,5 @@ MY_PASSWORD = config.aliexpress.password
 
 if __name__ == '__main__':
     cursor = Cursor(MY_USER, MY_PASSWORD, headless=False)
-    # auth = cursor.login()
-    auth = False
+    auth = cursor.login()
     cursor.kill_them_all(auth)

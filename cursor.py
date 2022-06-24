@@ -1,15 +1,12 @@
-from time import sleep
-
 from selenium import webdriver
 from selenium.common import exceptions
-from selenium.webdriver.chrome.options import Options as ChromeOptions
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from tqdm import tqdm
-from webdriver_manager.chrome import ChromeDriverManager
+
+from driver import Driver_config
 
 
 class Cursor:
@@ -17,25 +14,29 @@ class Cursor:
     Cursor object that allows you to interact with the Aliexpress wishlist
     """
     ALI_URL = 'https://login.aliexpress.ru/'
-    ALI_WISH_URL = 'https://my.aliexpress.ru/wishlist/wish_list_product_list.htm?currentGroupId=0'
+    ALI_WISH_URL = 'https://my.aliexpress.ru/wishlist/' \
+                   + 'wish_list_product_list.htm?currentGroupId=0'
 
-    def __init__(self, user, password, headless=True):
+    def __init__(self, user, password, browser, headless=True):
         self.user = user
         self.password = password
         self.headless = headless
+        if browser not in ['chrome', 'firefox']:
+            raise ValueError('browser must be only firefox or chrome')
+        self.browser = browser
 
     @property
     def driver(self):
-        if headless:
-            options = ChromeOptions()
+        if self.headless:
+            options = FirefoxOptions()
             options.add_argument("--headless")
-            driver = webdriver.Chrome(
-                service=Service(ChromeDriverManager().install()),
+            driver = webdriver.Firefox(
+                service=Service(GeckoDriverManager().install()),
                 options=options
             )
             return driver
-        driver = webdriver.Chrome(
-            service=Service(ChromeDriverManager().install())
+        driver = webdriver.Firefox(
+            service=Service(GeckoDriverManager().install())
         )
         return driver
 
@@ -88,14 +89,19 @@ class Cursor:
         if auth:
             self._load_all_items(driver)
 
-            links = driver.find_elements_by_class_name('Wishlist_ActionBlock__delete__1mups')
+            links = driver.find_elements_by_class_name(
+                'Wishlist_ActionBlock__delete__1mups'
+            )
 
-            print(f'Количество предметов в списке жеданий {len(links)}')
-            actions = ActionChains(driver)
-            for link in tqdm(links):
-                actions.move_to_element(link)
-                actions.click(link)
-                actions.perform()
+            if len(links) == 0:
+                print('Ваш wishlist уже пуст')
+            else:
+                print(f'Количество предметов в списке жеданий {len(links)}')
+                actions = ActionChains(driver)
+                for link in tqdm(links):
+                    actions.move_to_element(link)
+                    actions.click(link)
+                    actions.perform()
         else:
             raise Exception('Please check your credentials')
 
