@@ -1,4 +1,4 @@
 selenium==4.2.0
 tqdm==4.64.0
-webdriver-manager
-environs
+webdriver-manager==3.7.0
+environs==9.5.0

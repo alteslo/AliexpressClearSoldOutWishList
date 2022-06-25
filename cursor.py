@@ -12,11 +12,14 @@ from driver import Driver_config
 
 class Cursor:
     """
-    Cursor object that allows you to interact with the Aliexpress wishlist
+    Cursor object that allows you to interact with the Aliexpress wishlist.
+    It takes three required arguments: login, password,
+    and web driver (chrome or firefox).
+    The login must be the first method.
     """
     ALI_URL = 'https://login.aliexpress.ru/'
-    ALI_WISH_URL = ('https://my.aliexpress.ru/wishlist/' /
-                    + 'wish_list_product_list.htm?currentGroupId=0')
+    ALI_WISH_URL = 'https://my.aliexpress.ru/wishlist/' \
+                   + 'wish_list_product_list.htm?currentGroupId=0'
 
     def __init__(self, user, password, browser, headless=True):
         self.user = user
@@ -54,7 +57,7 @@ class Cursor:
 
     def login(self):
         """
-        Authorize and returns True if success
+        Authorize and returns True if success or False if not
         """
         driver = self.driver
         driver.get(Cursor.ALI_URL)
@@ -70,14 +73,15 @@ class Cursor:
         else:
             login = driver.find_element(By.ID, 'email')
             login.send_keys(self.user)
+            sleep(2)
             password = driver.find_element(By.ID, 'password')
             password.send_keys(self.password)
-
+            sleep(2)
             driver.find_element(
                 By.XPATH,
                 '/html/body/div/div/div[3]/div/div[1]/div[3]/div/form/button'
             ).click()
-            sleep(10)
+            sleep(1)
             driver.switch_to.default_content()
         return True
 
