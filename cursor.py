@@ -1,4 +1,5 @@
-from selenium import webdriver
+from time import sleep
+
 from selenium.common import exceptions
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
@@ -14,8 +15,8 @@ class Cursor:
     Cursor object that allows you to interact with the Aliexpress wishlist
     """
     ALI_URL = 'https://login.aliexpress.ru/'
-    ALI_WISH_URL = 'https://my.aliexpress.ru/wishlist/' \
-                   + 'wish_list_product_list.htm?currentGroupId=0'
+    ALI_WISH_URL = ('https://my.aliexpress.ru/wishlist/' /
+                    + 'wish_list_product_list.htm?currentGroupId=0')
 
     def __init__(self, user, password, browser, headless=True):
         self.user = user
@@ -27,16 +28,27 @@ class Cursor:
 
     @property
     def driver(self):
+        driver_config = Driver_config()
+
+        if self.browser == 'firefox':
+            driver_config = driver_config.firefox
+        else:
+            driver_config = driver_config.chrome
+
+        web_driver = driver_config.driver
+        service = driver_config.service
+        manager = driver_config.manager
+
         if self.headless:
-            options = FirefoxOptions()
+            options = driver_config.options
             options.add_argument("--headless")
-            driver = webdriver.Firefox(
-                service=Service(GeckoDriverManager().install()),
+            driver = web_driver(
+                service=service(manager.install()),
                 options=options
             )
             return driver
-        driver = webdriver.Firefox(
-            service=Service(GeckoDriverManager().install())
+        driver = web_driver(
+            service=service(manager.install())
         )
         return driver
 
@@ -50,21 +62,22 @@ class Cursor:
         try:
             wait = WebDriverWait(driver, 30)
             wait.until(
-                EC.presence_of_element_located((By.ID, "fm-login-id"))
+                EC.presence_of_element_located((By.ID, "email"))
             )
         except Exception:
             return False
 
         else:
-            login = driver.find_element(By.ID, 'fm-login-id')
+            login = driver.find_element(By.ID, 'email')
             login.send_keys(self.user)
-            password = driver.find_element(By.ID, 'fm-login-password')
+            password = driver.find_element(By.ID, 'password')
             password.send_keys(self.password)
 
             driver.find_element(
                 By.XPATH,
-                '/html/body/div[1]/div/div[3]/div/div[1]/div[3]/div/button'
+                '/html/body/div/div/div[3]/div/div[1]/div[3]/div/form/button'
             ).click()
+            sleep(10)
             driver.switch_to.default_content()
         return True
 
@@ -86,6 +99,7 @@ class Cursor:
         """
         driver = self.driver
         driver.get(Cursor.ALI_WISH_URL)
+        sleep(5)
         if auth:
             self._load_all_items(driver)
 

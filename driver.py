@@ -1,29 +1,28 @@
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
-from selenium.webdriver.firefox.service import Service as F_Service
-from webdriver_manager.firefox import GeckoDriverManager
-from selenium import webdriver
+from dataclasses import dataclass
 
+from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.chrome.service import Service as G_Service
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.firefox.service import Service as F_Service
 from webdriver_manager.chrome import ChromeDriverManager
-
-from dataclasses import dataclass
+from webdriver_manager.firefox import GeckoDriverManager
 
 
 @dataclass
 class Firefox:
-    options = FirefoxOptions
+    options = FirefoxOptions()
     driver = webdriver.Firefox
     service = F_Service
-    manager = GeckoDriverManager
+    manager = GeckoDriverManager()
 
 
 @dataclass
 class Chrome:
-    options = ChromeOptions
+    options = ChromeOptions()
     driver = webdriver.Chrome
     service = G_Service
-    manager = ChromeDriverManager
+    manager = ChromeDriverManager()
 
 
 @dataclass
