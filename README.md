@@ -5,7 +5,7 @@ hope that helps you
 
 ### Functionality
 - Complete cleaning of the wish list
-- Clearing a sold out item in the wish list (coming soon)
+- Cleaning a sold out item in the wish list (coming soon)
 
 ### Interesting
 - There is no need to install the web driver special
@@ -17,7 +17,7 @@ hope that helps you
 - Python >= 3.9
 - Selenium
 
-## Старт
+## Start
 
 #### 1) Rename "api\api\.env copy" на "api\api\.env" and register your credentials
 
